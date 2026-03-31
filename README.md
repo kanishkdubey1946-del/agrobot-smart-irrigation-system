@@ -49,6 +49,8 @@ This project uses IoT to build a compact device that:
 | ESP8266 Wi-Fi Module | Handles wireless communication via AT commands + HTTP POST |
 | Piezoelectric Buzzer | Local alert when moisture is out of safe range |
 
+![imagesproject-setup jpg](https://github.com/user-attachments/assets/5b3a694c-d1ed-4b84-81c4-107c6707ea6b)
+
 ---
 
 ## System Architecture
@@ -73,6 +75,8 @@ Soil Moisture Sensor
 ```
 
 **Data flow:** `Moisture Sensor → Arduino → Wi-Fi → Web Server → Website`
+<img width="1408" height="768" alt="imagesproject-data flow jpg" src="https://github.com/user-attachments/assets/d59eb764-13f7-4c30-b697-bb53376b71c2" />
+
 
 ---
 
