@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroBot — Smart Soil Moisture Monitoring System | IIT Patna</title>
+    <meta name="description" content="AgroBot is a real-time soil moisture monitoring dashboard for an Arduino Uno IoT project. Built as a Capstone-I project at IIT Patna.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Alert Banner -->
+    <div id="alert-banner" class="alert-banner hidden">
+        <div class="alert-banner-content">
+            <i class="fas fa-exclamation-triangle alert-banner-icon"></i>
+            <span id="alert-banner-message"></span>
+            <button id="alert-banner-dismiss" class="alert-banner-dismiss" aria-label="Dismiss alert">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Background Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Header / Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <div class="navbar-brand">
+                <div class="logo">
+                    <i class="fas fa-leaf logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>AgroBot</h1>
+                        <span class="subtitle">Smart Soil Moisture Monitoring System</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navbar-actions">
+                <div class="connected-device-pill" id="connected-device-pill" title="Connected Device">
+                    <i class="fas fa-microchip"></i>
+                    <span id="connected-device-name">—</span>
+                </div>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <div class="status-pill" id="status-pill">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span class="status-text" id="status-text">Checking…</span>
+                </div>
+                <button id="btn-logout" class="btn-logout" title="Disconnect & Logout">
+                    <i class="fas fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+
+        <!-- Hero Section — Live Moisture Gauge -->
+        <section class="section hero-section" id="hero-section">
+            <div class="gauge-card glass-card">
+                <div class="gauge-wrapper" id="gauge-wrapper">
+                    <!-- Skeleton -->
+                    <div class="skeleton-gauge skeleton-shimmer" id="skeleton-gauge"></div>
+                    <!-- Actual Gauge (hidden until loaded) -->
+                    <div class="gauge-container hidden" id="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 200 200" id="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" id="gauge-grad-start" stop-color="#4caf50"/>
+                                    <stop offset="100%" id="gauge-grad-end" stop-color="#81c784"/>
+                                </linearGradient>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <circle class="gauge-bg" cx="100" cy="100" r="85" />
+                            <circle class="gauge-fill" cx="100" cy="100" r="85" id="gauge-fill"
+                                    stroke-dasharray="534.07"
+                                    stroke-dashoffset="534.07"
+                                    filter="url(#glow)" />
+                            <circle class="gauge-inner-ring" cx="100" cy="100" r="70" />
+                        </svg>
+                        <div class="gauge-center">
+                            <span class="gauge-value" id="gauge-value">—</span>
+                            <span class="gauge-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="gauge-info">
+                    <span class="moisture-status" id="moisture-status">Loading…</span>
+                    <span class="last-updated" id="last-updated"><i class="far fa-clock"></i> Waiting for data…</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats Row -->
+        <section class="section stats-section" id="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card glass-card" id="stat-avg">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-avg"></div>
+                    <div class="stat-content hidden" id="content-avg">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-chart-line stat-icon"></i>
+                        </div>
+                        <div class="stat-data">
+                            <span class="stat-label">Today's Average</span>
+                            <span class="stat-value" id="avg-value">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card glass-card" id="stat-min">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-min"></div>
+                    <div class="stat-content hidden" id="content-min">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-arrow-down stat-icon"></i>
+                        </div>
+                        <div class="stat-data">
+                            <span class="stat-label">Today's Lowest</span>
+                            <span class="stat-value" id="min-value">—</span>
+                            <span class="stat-sub" id="min-time"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card glass-card" id="stat-max">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-max"></div>
+                    <div class="stat-content hidden" id="content-max">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-arrow-up stat-icon"></i>
+                        </div>
+                        <div class="stat-data">
+                            <span class="stat-label">Today's Highest</span>
+                            <span class="stat-value" id="max-value">—</span>
+                            <span class="stat-sub" id="max-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weather Conditions Section -->
+        <section class="section weather-section" id="weather-section">
+            <div class="weather-header">
+                <h2 class="section-title"><i class="fas fa-cloud-sun"></i> Local Weather Conditions</h2>
+                <span class="weather-location" id="weather-location"><i class="fas fa-map-marker-alt"></i> Detecting location...</span>
+            </div>
+            <div class="weather-grid">
+                <div class="weather-card glass-card" id="weather-temp">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-temp"></div>
+                    <div class="weather-content hidden" id="content-temp">
+                        <div class="weather-icon-wrap weather-icon-temp">
+                            <i class="fas fa-temperature-half"></i>
+                        </div>
+                        <div class="weather-data">
+                            <span class="weather-label">Temperature</span>
+                            <span class="weather-value" id="weather-temp-val">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-card glass-card" id="weather-humidity">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-humidity"></div>
+                    <div class="weather-content hidden" id="content-humidity">
+                        <div class="weather-icon-wrap weather-icon-humidity">
+                            <i class="fas fa-droplet"></i>
+                        </div>
+                        <div class="weather-data">
+                            <span class="weather-label">Humidity</span>
+                            <span class="weather-value" id="weather-humidity-val">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-card glass-card" id="weather-wind">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-wind"></div>
+                    <div class="weather-content hidden" id="content-wind">
+                        <div class="weather-icon-wrap weather-icon-wind">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div class="weather-data">
+                            <span class="weather-label">Wind Speed</span>
+                            <span class="weather-value" id="weather-wind-val">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-card glass-card" id="weather-condition">
+                    <div class="skeleton-stat skeleton-shimmer" id="skeleton-condition"></div>
+                    <div class="weather-content hidden" id="content-condition">
+                        <div class="weather-icon-wrap weather-icon-condition">
+                            <i class="fas fa-cloud-sun" id="condition-icon"></i>
+                        </div>
+                        <div class="weather-data">
+                            <span class="weather-label">Conditions</span>
+                            <span class="weather-value" id="weather-condition-val">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="weather-no-location hidden" id="weather-no-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>Location access needed for weather data.</p>
+                <button class="btn-location-retry" id="btn-location-retry">
+                    <i class="fas fa-location-crosshairs"></i> Enable Location
+                </button>
+            </div>
+        </section>
+
+        <!-- Weekly Graph Section -->
+        <section class="section chart-section" id="chart-section">
+            <div class="chart-card glass-card">
+                <div class="chart-header">
+                    <h2 class="section-title"><i class="fas fa-chart-area"></i> Moisture Trends</h2>
+                    <div class="chart-toggle" id="chart-toggle">
+                        <button class="toggle-btn active" data-view="daily" id="btn-daily">Daily Average</button>
+                        <button class="toggle-btn" data-view="hourly" id="btn-hourly">Hourly (Today)</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="skeleton-chart skeleton-shimmer" id="skeleton-chart"></div>
+                    <canvas id="moisture-chart" class="hidden"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alert History Section -->
+        <section class="section alerts-section" id="alerts-section">
+            <div class="alerts-card glass-card">
+                <h2 class="section-title"><i class="fas fa-bell"></i> Alert History</h2>
+                <div class="table-wrapper">
+                    <div class="skeleton-table skeleton-shimmer" id="skeleton-alerts"></div>
+                    <table class="alerts-table hidden" id="alerts-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Moisture %</th>
+                                <th>Alert Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-tbody"></tbody>
+                    </table>
+                    <div class="no-data hidden" id="no-alerts">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No alerts — everything is looking good!</p>
+                    </div>
+                </div>
+                <div class="pagination hidden" id="alerts-pagination">
+                    <button class="page-btn" id="prev-page" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>
+                    <span class="page-info" id="page-info">Page 1 of 1</span>
+                    <button class="page-btn" id="next-page" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Device Info Card -->
+        <section class="section device-section" id="device-section">
+            <div class="device-card glass-card">
+                <h2 class="section-title"><i class="fas fa-microchip"></i> Device Information</h2>
+                <div class="device-grid">
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-robot"></i> Device Name</span>
+                        <span class="device-value" id="info-device-name">AgroBot</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-fingerprint"></i> Device ID</span>
+                        <span class="device-value" id="info-device-id">—</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-microchip"></i> Microcontroller</span>
+                        <span class="device-value">Arduino Uno — ATmega328P</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-wifi"></i> Wi-Fi Module</span>
+                        <span class="device-value" id="info-wifi-module">ESP8266</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-tint"></i> Sensor Type</span>
+                        <span class="device-value">Resistive Soil Moisture Sensor</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-map-marker-alt"></i> Location</span>
+                        <span class="device-value">IIT Patna — Lab</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-globe"></i> Server URL</span>
+                        <span class="device-value" id="info-server-url">—</span>
+                    </div>
+                    <div class="device-item">
+                        <span class="device-label"><i class="fas fa-database"></i> Total Readings Today</span>
+                        <span class="device-value" id="total-readings">—</span>
+                    </div>
+                </div>
+                <button class="btn-raw-data" id="btn-raw-data">
+                    <i class="fas fa-table"></i> View Raw Data
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Raw Data Modal -->
+    <div class="modal-overlay hidden" id="raw-modal-overlay">
+        <div class="modal glass-card" id="raw-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-table"></i> Raw Sensor Data (Last 20 Readings)</h3>
+                <button class="modal-close" id="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <table class="raw-table" id="raw-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Timestamp</th>
+                            <th>Raw ADC Value</th>
+                            <th>Moisture %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="raw-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="footer-main"><i class="fas fa-leaf"></i> AgroBot — Capstone-I Project | IIT Patna CSDA 2026</p>
+            <p class="footer-sub">Group 16 | UA2504CDH85</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
