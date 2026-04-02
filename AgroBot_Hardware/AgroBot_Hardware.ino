@@ -1,13 +1,5 @@
-/*
- * AgroBot - Smart Soil Moisture Monitoring System
- * Complete Hardware Code for Arduino Uno + ESP8266
- */
 
 #include <SoftwareSerial.h>
-
-// ==============================================================================
-// 🔧 CONFIGURATION SETTINGS - Change these as needed
-// ==============================================================================
 
 // --- Wi-Fi Settings ---
 #define WIFI_SSID       "YOUR_WIFI_NAME"
