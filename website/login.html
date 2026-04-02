@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroBot — Connect Your Device</title>
+    <meta name="description" content="Connect your Arduino soil moisture sensor to AgroBot dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body class="login-body">
+
+    <!-- Background Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="login-wrapper">
+        <!-- Left: Branding Panel -->
+        <div class="login-brand">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <i class="fas fa-leaf brand-leaf"></i>
+                    <h1>AgroBot</h1>
+                </div>
+                <p class="brand-tagline">Smart Soil Moisture Monitoring System</p>
+                <div class="brand-features">
+                    <div class="feature-item">
+                        <i class="fas fa-microchip"></i>
+                        <span>Arduino Uno + ESP8266</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-wifi"></i>
+                        <span>Real-time Wireless Data</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Live Dashboard Analytics</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Smart Alert Notifications</span>
+                    </div>
+                </div>
+                <div class="brand-footer">
+                    <p>Capstone-I Project | IIT Patna CSDA 2026</p>
+                    <p>Group 16 | UA2504CDH85</p>
+                </div>
+            </div>
+            <!-- Decorative animated rings -->
+            <div class="brand-rings">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+            </div>
+        </div>
+
+        <!-- Right: Login Form -->
+        <div class="login-form-panel">
+            <div class="login-form-container">
+                <div class="form-header">
+                    <div class="form-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h2>Connect Your Device</h2>
+                    <p>Enter your Arduino/ESP8266 device details to access the monitoring dashboard.</p>
+                </div>
+
+                <form id="login-form" autocomplete="off">
+                    <!-- Device Name -->
+                    <div class="input-group">
+                        <label for="device-name">
+                            <i class="fas fa-robot"></i> Device Name
+                        </label>
+                        <input type="text" id="device-name" placeholder="e.g. AgroBot-Lab1" required>
+                    </div>
+
+                    <!-- Device ID -->
+                    <div class="input-group">
+                        <label for="device-id">
+                            <i class="fas fa-fingerprint"></i> Device ID
+                        </label>
+                        <input type="text" id="device-id" placeholder="e.g. AGRO-0016" required>
+                        <span class="input-hint">Unique identifier for your Arduino module</span>
+                    </div>
+
+                    <!-- Server URL / IP -->
+                    <div class="input-group">
+                        <label for="device-url">
+                            <i class="fas fa-globe"></i> Server IP / URL
+                        </label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">http://</span>
+                            <input type="text" id="device-url" placeholder="e.g. 192.168.1.100:3000" required>
+                        </div>
+                        <span class="input-hint">IP address of the server receiving ESP8266 data</span>
+                    </div>
+
+                    <!-- WiFi Module Type -->
+                    <div class="input-group">
+                        <label for="wifi-module">
+                            <i class="fas fa-wifi"></i> Wi-Fi Module
+                        </label>
+                        <select id="wifi-module">
+                            <option value="esp8266">ESP8266 (NodeMCU)</option>
+                            <option value="esp32">ESP32</option>
+                            <option value="esp8266-01">ESP8266-01</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Access Key (optional) -->
+                    <div class="input-group">
+                        <label for="access-key">
+                            <i class="fas fa-key"></i> Access Key <span class="optional">(optional)</span>
+                        </label>
+                        <div class="input-password-wrap">
+                            <input type="password" id="access-key" placeholder="Device access key">
+                            <button type="button" class="toggle-password" id="toggle-password" aria-label="Show password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Location Permission -->
+                    <div class="location-prompt" id="location-prompt">
+                        <div class="location-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="location-info">
+                            <h4>Enable Weather Data</h4>
+                            <p>Allow location access to show local humidity, wind speed, and weather conditions on your dashboard.</p>
+                        </div>
+                        <button type="button" class="btn-location" id="btn-location">
+                            <i class="fas fa-location-crosshairs"></i> Allow Location
+                        </button>
+                    </div>
+                    <div class="location-status hidden" id="location-status">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="location-text">Location enabled</span>
+                    </div>
+
+                    <!-- Remember Device -->
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-device" checked>
+                            <span class="checkmark"></span>
+                            <span>Remember this device</span>
+                        </label>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div class="form-error hidden" id="form-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="error-text"></span>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-connect" id="btn-connect">
+                        <span class="btn-text">Connect to Dashboard</span>
+                        <span class="btn-loader hidden" id="btn-loader">
+                            <i class="fas fa-circle-notch fa-spin"></i> Connecting...
+                        </span>
+                        <i class="fas fa-arrow-right btn-arrow"></i>
+                    </button>
+                </form>
+
+                <!-- Saved Devices -->
+                <div class="saved-devices hidden" id="saved-devices">
+                    <div class="divider">
+                        <span>or connect to a saved device</span>
+                    </div>
+                    <div class="saved-list" id="saved-list"></div>
+                </div>
+
+                <div class="form-footer">
+                    <p><i class="fas fa-shield-alt"></i> Connection is local — no cloud required</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
