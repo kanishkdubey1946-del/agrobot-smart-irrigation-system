@@ -120,11 +120,6 @@ The dashboard includes:
 
 ---
 
-## 👨‍💻 Team
-
-**Kanishk Ashish Dubey**
-CSDA Program, IIT Patna
-Capstone-I Project — 2nd Semester, 2025
 
 ---
 
