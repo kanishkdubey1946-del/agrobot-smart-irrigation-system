@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroBot — Smart Irrigation System | IIT Patna</title>
-    <meta name="description" content="AgroBot is a real-time soil moisture monitoring dashboard for an Arduino Uno IoT project. Built as a Capstone-I project at IIT Patna.">
+    <meta name="description"
+        content="AgroBot is a real-time soil moisture monitoring dashboard for an Arduino Uno IoT project.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- Alert Banner -->
@@ -36,7 +40,7 @@
                     <i class="fas fa-leaf logo-icon"></i>
                     <div class="logo-text">
                         <h1>AgroBot</h1>
-                        <span class="subtitle">Smart Soil Moisture Monitoring System</span>
+                        <span class="subtitle">Smart Irrigation System</span>
                     </div>
                 </div>
             </div>
@@ -72,22 +76,20 @@
                         <svg class="gauge-svg" viewBox="0 0 200 200" id="gauge-svg">
                             <defs>
                                 <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" id="gauge-grad-start" stop-color="#4caf50"/>
-                                    <stop offset="100%" id="gauge-grad-end" stop-color="#81c784"/>
+                                    <stop offset="0%" id="gauge-grad-start" stop-color="#4caf50" />
+                                    <stop offset="100%" id="gauge-grad-end" stop-color="#81c784" />
                                 </linearGradient>
                                 <filter id="glow">
-                                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                                     <feMerge>
-                                        <feMergeNode in="coloredBlur"/>
-                                        <feMergeNode in="SourceGraphic"/>
+                                        <feMergeNode in="coloredBlur" />
+                                        <feMergeNode in="SourceGraphic" />
                                     </feMerge>
                                 </filter>
                             </defs>
                             <circle class="gauge-bg" cx="100" cy="100" r="85" />
                             <circle class="gauge-fill" cx="100" cy="100" r="85" id="gauge-fill"
-                                    stroke-dasharray="534.07"
-                                    stroke-dashoffset="534.07"
-                                    filter="url(#glow)" />
+                                stroke-dasharray="534.07" stroke-dashoffset="534.07" filter="url(#glow)" />
                             <circle class="gauge-inner-ring" cx="100" cy="100" r="70" />
                         </svg>
                         <div class="gauge-center">
@@ -151,7 +153,8 @@
         <section class="section weather-section" id="weather-section">
             <div class="weather-header">
                 <h2 class="section-title"><i class="fas fa-cloud-sun"></i> Local Weather Conditions</h2>
-                <span class="weather-location" id="weather-location"><i class="fas fa-map-marker-alt"></i> Detecting location...</span>
+                <span class="weather-location" id="weather-location"><i class="fas fa-map-marker-alt"></i> Detecting
+                    location...</span>
             </div>
             <div class="weather-grid">
                 <div class="weather-card glass-card" id="weather-temp">
@@ -252,9 +255,11 @@
                     </div>
                 </div>
                 <div class="pagination hidden" id="alerts-pagination">
-                    <button class="page-btn" id="prev-page" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>
+                    <button class="page-btn" id="prev-page" aria-label="Previous page"><i
+                            class="fas fa-chevron-left"></i></button>
                     <span class="page-info" id="page-info">Page 1 of 1</span>
-                    <button class="page-btn" id="next-page" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
+                    <button class="page-btn" id="next-page" aria-label="Next page"><i
+                            class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </section>
@@ -310,7 +315,8 @@
         <div class="modal glass-card" id="raw-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-table"></i> Raw Sensor Data (Last 20 Readings)</h3>
-                <button class="modal-close" id="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+                <button class="modal-close" id="modal-close" aria-label="Close modal"><i
+                        class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <table class="raw-table" id="raw-table">
@@ -338,4 +344,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
