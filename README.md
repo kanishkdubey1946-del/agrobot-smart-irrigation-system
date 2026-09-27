@@ -135,4 +135,4 @@ The dashboard includes:
 
 ---
 
-<p align="center">Made with ❤️ at IIT Patna</p>
+<p align="center">Made with  at IIT Patna</p>
