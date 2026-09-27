@@ -134,5 +134,3 @@ The dashboard includes:
 - Lokmat (2023) — Onion and tomato losses in Nashik from unmonitored drip irrigation
 
 ---
-
-<p align="center">Made with  at IIT Patna</p>
